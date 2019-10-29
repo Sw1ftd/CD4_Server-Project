@@ -1,0 +1,98 @@
+<html>
+<head>
+    <title>Favorite Movies</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        header {
+            width: 100%;
+            text-align: center;
+            
+        }
+        section {
+            display: flex;
+            flex-direction: row;
+            height: 70%;
+            background-color: white;
+            color: black;
+        }
+        nav, article {
+            width: 100%;
+            background-color: red;
+            margin: 2;
+        }
+        nav {
+            flex:20%;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+     <header><h1>Ratings</h1></header>
+    <section>
+    <nav>
+        <h3>Navigator</h3>
+        <li><a href="index.html">Main Page</a></li>
+    </nav>
+    <article>
+    <ul>
+            
+    </ul>
+    <form>
+        <label for="rating">Rate The Avengers out of 10:</label>
+        <input name="newRating" type="number" step=1 min="0" max="10" required>
+        <input type="submit">
+    </form>
+    <p></p>
+    </article>
+    </section>
+    <script>
+    fetch("/ratings")
+        .then(response => response.json())
+        .then(body => updateList(body))
+        .catch(err => console.error(err))
+    
+    document.querySelector("input[type='submit']").onclick = submitRating
+        
+    function submitRating(event) {
+        //alert()
+        event.preventDefault()
+        const newRating = {
+            name: document.querySelector("input[type='number']").value
+        }
+        let config = {
+            method: "POST",
+            body: JSON.stringify(newRating),
+            headers: {
+                "Content-Type":"application/json"
+            }
+        }
+        fetch("/rating",config)
+            .then( response => response.json() )
+            .then( body => {updateList(body)})
+    }
+    
+    function updateList(ratings) {
+        let $list = document.querySelector("ul")
+        let text = ratings.map((rating) => `<li>${rating}</li>` ).join("")
+        let average = ratings.map((rating) => parseInt(rating))
+        ave(average)
+        $list.innerHTML = text
+    }
+    function ave(a) {
+        let $list = document.querySelector("p")
+        let o = 0
+        for(let i = 0; i < a.length; i++) {
+            o += a[i]
+        }
+        let p = o/a.length
+        $list.innerHTML = "Average Rating: " + p
+        if(o==0) {
+           $list.innerHTML = "Average Rating: " + 0
+        }
+    }
+    </script>
+</body>
+</html>
